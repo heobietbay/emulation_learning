@@ -2,8 +2,13 @@ package com.khoa.emulator;
 
 public class Chip8 {
     // MEMORY
+    // The Chip 8 has 4K memory in total, which we can emulated as:
     char memory[] = new char[4096];
-    short opcode;
+    /*
+    The Chip 8 has 35 opcodes which are all two bytes long.
+    To store the current opcode, we need a data type that allows us to store two bytes.
+    */
+    short currentOpCode;
 
     //REGISTERS
     /*
@@ -17,6 +22,10 @@ public class Chip8 {
     //The address register, which is named I,
     // is 16 bits wide and is used with several opcodes that involve memory operations.
     short addrRegI;
+
+    // There is an Index register I and a program counter (pc) which can have a value from 0x000 to 0xFFF
+    short I;
+    short pc;
 
     //STACK
     //The stack is only used to store return addresses when subroutines are called.
@@ -35,4 +44,47 @@ public class Chip8 {
     //Sound timer: This timer is used for sound effects.
     // When its value is nonzero, a beeping sound is made.
     char soundTimer;
+
+    /*
+    The graphics of the Chip 8 are black and white and the screen has a total of 2048 pixels (64 x 32).
+    This can easily be implemented using an array that hold the pixel state (1 or 0)
+    */
+    char[] gfx = new char[64 * 32];
+
+    /*
+     HEX based keypad (0x0-0xF), you can use an array to store the current state of the key
+    */
+    char[] key = new char[16];
+
+    /**
+     * <ol>
+     *     <li>Fetch Opcode</li>
+     *     <li>Decode Opcode</li>
+     *     <li>Execute Opcode</li>
+     *     <li>Update timers</li>
+     * </ol>
+     */
+    void emulateCycle(){
+
+    }
+
+    /**
+     * During this step, the system will fetch one opcode from the memory at the location
+     *   specified by the program counter (pc).
+     * In our Chip 8 emulator, data is stored in an array in which each address contains one byte.
+     * As one opcode is 2 bytes long, we will need to fetch two successive bytes
+     *    and merge them to get the actual opcode.
+     */
+    void fetchOpCode(){
+        short opbyte1 = (short) (memory[pc] << 8);
+        short opbyte2 = (short) memory[pc+1];
+        currentOpCode = (short) (opbyte1 | opbyte2);
+    }
+
+    public static void main(String[] args) {
+        char pc  = 0xA2;
+        char pc1 = 0xF0;
+        short op2 = (short)pc1;
+        System.out.println(String.format("0x%04X", pc << 8 | op2));
+    }
 }
