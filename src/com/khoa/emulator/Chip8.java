@@ -65,7 +65,7 @@ public class Chip8 {
      * </ol>
      */
     void emulateCycle(){
-
+        fetchOpCode();
     }
 
     /**
@@ -76,15 +76,47 @@ public class Chip8 {
      *    and merge them to get the actual opcode.
      */
     void fetchOpCode(){
-        short opbyte1 = (short) (memory[pc] << 8);
-        short opbyte2 = (short) memory[pc+1];
-        currentOpCode = (short) (opbyte1 | opbyte2);
+        currentOpCode = merge2CharBigEndian(memory[pc],memory[pc+1]);
+    }
+
+    void decodeOpcode(){
+        // In the opcode table (Chip8_ReadMe) , we can see opcode and what it means
+        // Suppose we have opcode  0xA2F0 -> A2F0
+        // In the table, we have something similar: ANNN, which means "Sets I to the address NNN"
+        // A2F0 -> set I to the address 2F0 -> I = 2F0
+        // to extract the 2F0  part, we can use AND(&) operator, with 0FFF
+       //  BECAUSE:
+        // A2F0 -> in binary would be ‭1010 0010 1111 0000‬
+        // 0FFF -> in binary would be 0000 1111 1111 1111
+        // AND result:                0000 0010 1111 0000
+
+        //Similarly, to get the initial opcode, we can AND the currentOpcode with F000
+        //EX: A2F0 -> 1010 0010 1111 0000‬
+        //    F000 -> 1111 0000 0000 0000
+        //AND      -> 1010 0000 0000 0000
+    }
+
+    void executeOpcode(){
+        short decodeOp =  (short) (currentOpCode & 0xF000);
+        switch (decodeOp){
+            case (short) 0xA000: // ANNN: Sets I to the address NNN
+                I = (short) (currentOpCode & 0x0FFF);
+                pc += 2;
+                break;
+            default: break;
+        }
+    }
+
+    static short merge2CharBigEndian(char byte1, char byte2){
+        short sbyte1 = (short) byte1;
+        sbyte1 = (short) (sbyte1 << 8);
+        short sbyte2 = (short) byte2;
+        return (short) (sbyte1 | sbyte2);
     }
 
     public static void main(String[] args) {
         char pc  = 0xA2;
         char pc1 = 0xF0;
-        short op2 = (short)pc1;
-        System.out.println(String.format("0x%04X", pc << 8 | op2));
+        System.out.println(String.format("0x%04X", merge2CharBigEndian(pc,pc1)));
     }
 }

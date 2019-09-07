@@ -15,29 +15,29 @@ CHIP-8 has 35 opcodes, which are all two bytes long and stored big-endian. The o
     I : 16bit register (For memory address) (Similar to void pointer)
     VN: One of the 16 available variables. N may be 0 to F (hexadecimal)
 
-Opcode 	Type 	C Pseudo 	Explanation
-0NNN 	Call 		        Calls RCA 1802 program at address NNN. Not necessary for most ROMs.
+Opcode 	Type 	C Pseudo 	    Explanation
+0NNN 	Call 		            Calls RCA 1802 program at address NNN. Not necessary for most ROMs.
 00E0 	Display disp_clear() 	Clears the screen.
-00EE 	Flow 	return; 	Returns from a subroutine.
-1NNN 	Flow 	goto NNN; 	Jumps to address NNN.
-2NNN 	Flow 	*(0xNNN)() 	Calls subroutine at NNN.
-3XNN 	Cond 	if(Vx==NN) 	Skips the next instruction if VX equals NN. (Usually the next instruction is a jump to skip a code block)
-4XNN 	Cond 	if(Vx!=NN) 	Skips the next instruction if VX doesn't equal NN. (Usually the next instruction is a jump to skip a code block)
-5XY0 	Cond 	if(Vx==Vy) 	Skips the next instruction if VX equals VY. (Usually the next instruction is a jump to skip a code block)
-6XNN 	Const 	Vx = NN 	Sets VX to NN.
-7XNN 	Const 	Vx += NN 	Adds NN to VX. (Carry flag is not changed)
-8XY0 	Assign 	Vx=Vy 	Sets VX to the value of VY.
-8XY1 	BitOp 	Vx=Vx|Vy 	Sets VX to VX or VY. (Bitwise OR operation)
-8XY2 	BitOp 	Vx=Vx&Vy 	Sets VX to VX and VY. (Bitwise AND operation)
-8XY3 	BitOp 	Vx=Vx^Vy 	Sets VX to VX xor VY.
-8XY4 	Math 	Vx += Vy 	Adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there isn't.
-8XY5 	Math 	Vx -= Vy 	VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
-8XY6 	BitOp 	Vx>>=1 	Stores the least significant bit of VX in VF and then shifts VX to the right by 1.[2]
-8XY7 	Math 	Vx=Vy-Vx 	Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
-8XYE 	BitOp 	Vx<<=1 	Stores the most significant bit of VX in VF and then shifts VX to the left by 1.[3]
-9XY0 	Cond 	if(Vx!=Vy) 	Skips the next instruction if VX doesn't equal VY. (Usually the next instruction is a jump to skip a code block)
-ANNN 	MEM 	I = NNN 	Sets I to the address NNN.
-BNNN 	Flow 	PC=V0+NNN 	Jumps to the address NNN plus V0.
+00EE 	Flow 	return; 	    Returns from a subroutine.
+1NNN 	Flow 	goto NNN; 	    Jumps to address NNN.
+2NNN 	Flow 	*(0xNNN)() 	    Calls subroutine at NNN.
+3XNN 	Cond 	if(Vx==NN) 	    Skips the next instruction if VX equals NN. (Usually the next instruction is a jump to skip a code                            block)
+4XNN 	Cond 	if(Vx!=NN) 	    Skips the next instruction if VX doesn't equal NN. (Usually the next instruction is a jump to skip a                               code block)
+5XY0 	Cond 	if(Vx==Vy) 	    Skips the next instruction if VX equals VY. (Usually the next instruction is a jump to skip a code block)
+6XNN 	Const 	Vx = NN 	    Sets VX to NN.
+7XNN 	Const 	Vx += NN 	    Adds NN to VX. (Carry flag is not changed)
+8XY0 	Assign 	Vx=Vy 	        Sets VX to the value of VY.
+8XY1 	BitOp 	Vx=Vx|Vy 	    Sets VX to VX or VY. (Bitwise OR operation)
+8XY2 	BitOp 	Vx=Vx&Vy 	    Sets VX to VX and VY. (Bitwise AND operation)
+8XY3 	BitOp 	Vx=Vx^Vy 	    Sets VX to VX xor VY.
+8XY4 	Math 	Vx += Vy 	    Adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there isn't.
+8XY5 	Math 	Vx -= Vy 	    VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
+8XY6 	BitOp 	Vx>>=1 	        Stores the least significant bit of VX in VF and then shifts VX to the right by 1.[2]
+8XY7 	Math 	Vx=Vy-Vx 	    Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
+8XYE 	BitOp 	Vx<<=1 	        Stores the most significant bit of VX in VF and then shifts VX to the left by 1.[3]
+9XY0 	Cond 	if(Vx!=Vy) 	    Skips the next instruction if VX doesn't equal VY. (Usually the next instruction is a jump to skip a code block)
+ANNN 	MEM 	I = NNN 	    Sets I to the address NNN.
+BNNN 	Flow 	PC=V0+NNN 	    Jumps to the address NNN plus V0.
 CXNN 	Rand 	Vx=rand()&NN 	Sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN.
 DXYN 	Disp 	draw(Vx,Vy,N) 	Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels. Each row of 8 pixels is read as bit-coded starting from memory location I; I value doesn’t change after the execution of this instruction. As described above, VF is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that doesn’t happen
 EX9E 	KeyOp 	if(key()==Vx) 	Skips the next instruction if the key stored in VX is pressed. (Usually the next instruction is a jump to skip a code block)
