@@ -1,5 +1,5 @@
 package com.khoa.emulator;
-
+import java.util.Random;
 public class Chip8 {
     // MEMORY
     // The Chip 8 has 4K memory in total, which we can emulated as:
@@ -56,6 +56,26 @@ public class Chip8 {
     */
     char[] key = new char[16];
 
+    char[] chip8_fontset = new char[]
+    {
+            0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+            0x20, 0x60, 0x20, 0x20, 0x70, // 1
+            0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+            0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+            0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+            0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+            0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+            0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+            0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+            0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+            0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+            0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+            0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+            0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+            0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+            0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+    };
+
     /**
      * <ol>
      *     <li>Fetch Opcode</li>
@@ -103,6 +123,31 @@ public class Chip8 {
                 I = (short) (currentOpCode & 0x0FFF);
                 pc += 2;
                 break;
+            case (short) 0xB000: // Jumps to the address NNN plus V0.
+                pc = (short) ( registersV[0] + (short)(currentOpCode & 0x0FFF));
+                break;
+            //Vx=rand()&NN 	Sets VX to the result of a bitwise and operation on a random number
+            // (Typically: 0 to 255) and NN.
+            case (short) 0xC000:
+                int x = (currentOpCode & 0x0F00) >> 8;
+                int NN = currentOpCode & 0x00FF;
+                registersV[x] = (char) ((char)(rand.nextInt() % 0xFF) & (char) NN);
+                pc += 2;
+            /*
+            draw(Vx,Vy,N)
+            Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels.
+            Each row of 8 pixels is read as bit-coded starting from memory location I;
+            I value doesn’t change after the execution of this instruction.
+            As described above, VF is set to 1 if any screen pixels are flipped from set to unset
+            when the sprite is drawn, and to 0 if that doesn’t happen.
+            */
+            case (short) 0xD000:
+                x = (currentOpCode & 0x0F00) >> 8;
+                int y = (currentOpCode & 0x00F0) >> 4;
+                int N =  currentOpCode & 0x000F;
+                pc += 2;
+                //TODO: code for drawing
+                break;
             default: break;
         }
     }
@@ -114,9 +159,9 @@ public class Chip8 {
         return (short) (sbyte1 | sbyte2);
     }
 
+    Random rand = new Random();
+
     public static void main(String[] args) {
-        char pc  = 0xA2;
-        char pc1 = 0xF0;
-        System.out.println(String.format("0x%04X", merge2CharBigEndian(pc,pc1)));
+        System.out.println(String.format("0x%04X", 0x12F0 & 0xF000));
     }
 }
